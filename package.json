@@ -7,18 +7,20 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "vexflow": "^1.2.85",
+    "element-ui": "^2.4.5",
     "howler": "2.0.15",
+    "vexflow": "^1.2.85",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0"
   },
   "devDependencies": {
+    "@types/howler": "2.0.5",
+    "@types/vexflow": "1.2.32",
     "@vue/cli-plugin-typescript": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
-    "@types/vexflow": "1.2.32",
-    "@types/howler": "2.0.5",
     "typescript": "^3.0.0",
+    "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
   },
   "postcss": {
