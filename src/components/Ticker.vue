@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="ticker-body">
-      <el-button class="control-btn" v-if="!ticking" @click="onStart">Start</el-button>
-      <el-button class="control-btn" v-else @click="onStop">Stop</el-button>
-      <el-select class="option-block" v-model="measuresPerBlock">
+      <!-- <el-button class="control-btn" v-if="!ticking" @click="onStart">Start</el-button>
+      <el-button class="control-btn" v-else @click="onStop">Stop</el-button> -->
+      <el-select class="option-block" v-model="barsPerBlock">
         <el-option
-          v-for="item in measuresPerBlockOptoins"
+          v-for="item in barsPerBlockOptoins"
           :key="item"
-          :label="item"
+          :label="item + 'bars'"
           :value="item">
         </el-option>
       </el-select>
@@ -15,9 +15,7 @@
       <el-select class="option-block" v-model="bpm">
         <el-option
           v-for="item in bpmOptions"
-          :key="item"
-          :label="item"
-          :value="item">
+          :key="item" :label="item + 'bpm'" :value="item">
         </el-option>
       </el-select>
       
@@ -50,10 +48,6 @@
   margin: 5px;
 }
 
-.option-block {
-  width: 100px;
-  margin: 5px;
-}
 .beat-bar {
   display: flex;
   justify-content: space-between;
@@ -68,9 +62,9 @@
   border-radius: 50%;
 }
 .beat-dot-da {
-  background-color: rgb(255, 234, 0);
+  background-color: rgb(255, 220, 21);
 }
 .beat-dot-ding {
-  background-color: rgb(39, 196, 8);
+  background-color: rgb(21, 220, 255);
 }
 </style>

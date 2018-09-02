@@ -6,11 +6,11 @@ import { setInterval } from 'timers';
 export default class Ticker extends Vue {
   @Prop({ default: 1/16 }) public noteLength: number
   @Prop({ default: 1/4 }) public beatLength: number
-  @Prop({ default: 4 }) public beatsPerMeasure: number
+  @Prop({ default: 4 }) public beatsPerBar: number
   @Prop({ default: 1 }) public prepareBeats: number
   
-  public measuresPerBlock: number = 4
-  public measuresPerBlockOptoins: number[] = [1, 2, 4, 8]
+  public barsPerBlock: number = 4
+  public barsPerBlockOptoins: number[] = [0.5, 1, 2, 4, 8]
   public bpm: number = 120
   public bpmOptions: number[] = [100, 120, 160, 200, 240]
   public totalNotes: number = 0
@@ -28,16 +28,17 @@ export default class Ticker extends Vue {
     if (this.totalNotes < 0) return 0
     return (this.totalNotes / this.notesPerBeat)
   }
-  public get totalMeasure () {
-    return Math.floor(this.totalBeats / this.beatsPerMeasure)
+  public get totalBars () {
+    return Math.floor(this.totalBeats / this.beatsPerBar)
   }
   public get currentBlock() {
-    return Math.floor(this.totalMeasure / this.measuresPerBlock)
+    return Math.floor(this.totalBeats / this.beatsPerBar / this.barsPerBlock)
   }
   @Watch('currentBlock') public currentBlockChanged(val: Ticker['currentBlock']) {
-    this.$emit('nextBlock', val)
+    if (val !== 0) {
+      this.$emit('nextBlock', val)
+    }
   }
-
 
   public get beatDots () {
     const dots = Array(this.notesPerBeat).fill(0).map((v, idx) => ({key: idx, v}))
@@ -81,6 +82,7 @@ export default class Ticker extends Vue {
     console.log(this._timer)
   }
   public onStop () {
+    this.totalNotes = -this.notesPerBeat - 1
     this.ticking = false
     console.log(this._timer)
     if (this._timer) {
