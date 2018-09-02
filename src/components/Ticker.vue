@@ -74,5 +74,3 @@
   background-color: rgb(39, 196, 8);
 }
 </style>
-
-

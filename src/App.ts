@@ -2,14 +2,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 import StaveLine from './components/StaveLine.vue'
 import Ticker from './components/Ticker.vue'
 import { Flow as VF }  from 'vexflow'
-import { createPatterns } from '@/scripts/createPatterns'
-
-function mapPatternToNotes(p: string){
-  return p.split('').map(n => {
-    if (n === '0') return ':16 #3#'
-    if (n === '1') return ':16 X/4'
-  }).join(' ')
-}
+import { createPatterns, mapPatternToNotes } from '@/scripts/createPatterns'
 
 @Component({
   components: { StaveLine, Ticker},

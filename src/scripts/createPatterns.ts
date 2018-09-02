@@ -29,3 +29,24 @@ export function createPatterns (n: number) {
   }))
   .sort((a, b) => a.score - b.score)
 }
+
+export function mapPatternToNotes(p: string){
+  p = Array(p.length / 4).fill(0).map((v, idx) => idx * 4)
+  .map(c => p.substr(c, 4))
+  .map(pp => pp.replace('000', 'C'))
+  .map(pp => pp.replace('00', 'B'))
+  .map(pp => pp.replace('0', 'A'))
+  .join('')
+  
+  const restNoteA = ':16 #3#'
+  const restNoteB = ':8 #3#'
+  const restNoteC = ':8d #3#'
+  const beatNote = ':16 X/4'
+  let res = p.split('').map(n => {
+    if (n === 'A') return restNoteA
+    if (n === 'B') return restNoteB
+    if (n === 'C') return restNoteC
+    if (n === '1') return beatNote
+  }).join(' ')
+  return res
+}
