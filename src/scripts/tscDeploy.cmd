@@ -1,0 +1,1 @@
+tsc -w -m commonjs -t ES6 .\src\scripts\deploy.ts

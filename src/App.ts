@@ -41,8 +41,12 @@ export default class App extends Vue {
   }
 
   public onSelect (idx: number) {
+    if (this.currentIdx === idx) {
+      (this.$refs['ticker'] as any).onClick()
+    } else {
+      (this.$refs['ticker'] as any).onStart()
+    }
     this.currentIdx = idx;
-    (this.$refs['ticker'] as any).onStart()
   }
       
   created() {

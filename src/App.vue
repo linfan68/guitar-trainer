@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <ticker class='header' ref="ticker" @nextBlock="onNewBlock"/>
+    <div class='sider'>
+      <ticker ref="ticker" @nextBlock="onNewBlock"/>
+    </div>
+
     <div class='content'>
       <div
         v-for="note in notes" :key="note.idx"
@@ -9,6 +12,7 @@
         :class="{'stave-line-container-selected': note.idx === currentIdx}"
         @click="onSelect(note.idx)"
         >
+        <div class="note-idx" >{{note.idx}}</div> 
         <stave-line :notes="note.noteStr" />
       </div>
     </div>
@@ -26,15 +30,10 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  width: 100%;
-
   display: grid;
   grid-template-rows: auto 1fr;
 }
-.header {
+.sider {
   grid-row: 1/1;
 }
 
@@ -44,7 +43,18 @@
   grid-row: 2/2;
 }
 .stave-line-container {
-  background-color: transparent
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.note-idx {
+  vertical-align: middle;
+  line-height: 100%;
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  align-self: center;
 }
 
 .stave-line-container-selected {

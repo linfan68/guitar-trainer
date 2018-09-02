@@ -4,14 +4,15 @@ import { setInterval } from 'timers';
 
 @Component
 export default class Ticker extends Vue {
-  @Prop({ default: 120 }) public bpm: number
   @Prop({ default: 1/16 }) public noteLength: number
   @Prop({ default: 1/4 }) public beatLength: number
   @Prop({ default: 4 }) public beatsPerMeasure: number
   @Prop({ default: 1 }) public prepareBeats: number
   
   public measuresPerBlock: number = 4
-  public measuresPerBlockOptoins: number[] = [1, 2, 4]
+  public measuresPerBlockOptoins: number[] = [1, 2, 4, 8]
+  public bpm: number = 120
+  public bpmOptions: number[] = [100, 120, 160, 200, 240]
   public totalNotes: number = 0
   public ticking: boolean = false
   public dingAt: number = 0
@@ -76,7 +77,7 @@ export default class Ticker extends Vue {
           this._sounds[1].play()
         }
       }
-    }, 1000 * 60 / 120)
+    }, 1000 * 60 / this.bpm)
     console.log(this._timer)
   }
   public onStop () {
@@ -86,5 +87,9 @@ export default class Ticker extends Vue {
       window.clearInterval(this._timer)
       this._timer = undefined
     }
+  }
+  public onClick () {
+    if (this.ticking) this.onStop()
+    else this.onStart()
   }
 }
