@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="ticker-body">
-      <!-- <el-button class="control-btn" v-if="!ticking" @click="onStart">Start</el-button>
-      <el-button class="control-btn" v-else @click="onStop">Stop</el-button> -->
+    <div class="ticker">
       <el-select class="option-block" v-model="barsPerBlock">
         <el-option
           v-for="item in barsPerBlockOptoins"
@@ -27,6 +25,9 @@
         </el-radio-button>
       </el-radio-group>
       
+      <!-- <div>
+        <el-checkbox v-model="alternateBars" label="AltBar" border></el-checkbox>
+      </div> -->
     </div>
   </div>
 </template>
@@ -35,36 +36,37 @@
 
 </script>
 
-<style scoped>
-.ticker-body {
+<style lang="scss" scoped>
+.ticker {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   grid-template-columns: auto 1fr;
+  align-items: center;
+  .beat-bar {
+    display: flex;
+    justify-content: space-between;
+    height: 41px;
+    margin: 5px;
+    .beat-dot {
+      justify-self: center;
+      align-self: center;
+      height: 15px;
+      width: 15px;
+      background-color: #bbb;
+      border-radius: 50%;
+    }
+    .beat-dot-da {
+      background-color: rgb(255, 220, 21);
+    }
+    .beat-dot-ding {
+      background-color: rgb(21, 220, 255);
+    }
+  }
 }
 
-.control-btn {
-  width: 100px;
-  margin: 5px;
-}
 
-.beat-bar {
-  display: flex;
-  justify-content: space-between;
-}
 
-.beat-dot {
-  justify-self: center;
-  align-self: center;
-  height: 25px;
-  width: 25px;
-  background-color: #bbb;
-  border-radius: 50%;
-}
-.beat-dot-da {
-  background-color: rgb(255, 220, 21);
-}
-.beat-dot-ding {
-  background-color: rgb(21, 220, 255);
-}
+
+
 </style>

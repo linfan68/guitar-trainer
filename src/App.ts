@@ -1,24 +1,19 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import StaveLine from './components/StaveLine.vue'
 import Ticker from './components/Ticker.vue'
-import { Flow as VF }  from 'vexflow'
-import { createPatterns, mapPatternToNotes, createRandomPatterns } from '@/scripts/createPatterns'
+import RhythmBank from './components/RhythmBank.vue'
 
-type TraingType = 'EachBeat-15' | '2Beats-200+' | 'Random-100'
 
 const BLOCK_SIZE = 5
 @Component({
-  components: { StaveLine, Ticker},
+  components: { StaveLine, Ticker, RhythmBank },
 })
 export default class App extends Vue {
   public currentIdx = 0
-
-  public type: TraingType = 'EachBeat-15'
-  public typeOptions: TraingType[] = ['EachBeat-15', '2Beats-200+', 'Random-100']
-
   public startFrom: number = 0
+  public notes: string[] = []
   public get startFromOptions() {
-    return Array(Math.floor(this.patterns.length / BLOCK_SIZE))
+     return Array(Math.ceil(this.notes.length / BLOCK_SIZE))
     .fill(0).map((v, idx) => idx * BLOCK_SIZE)
   }
 
@@ -26,56 +21,42 @@ export default class App extends Vue {
     if (this.getBlockStart() !== this.startFrom) {
       this.currentIdx = this.startFrom
     }
+    (this.$refs['ticker'] as any).newPage()
   }
   @Watch('currentIdx') currentIdxChanged(val: number) {
     if (this.getBlockStart() !== this.startFrom) {
       this.startFrom = this.getBlockStart()
     }
   }
+  @Watch('notes') notesChanged(val: number) {
+    this.currentIdx = 0
+  }
 
   private getBlockStart () {
     return Math.floor(this.currentIdx / BLOCK_SIZE) * BLOCK_SIZE
   }
 
-  public get patterns () {
-    switch (this.type) {
-      case 'EachBeat-15': return createPatterns(4).map((pp, i) => ({ p: pp.p.repeat(4), i }))
-      case '2Beats-200+': {
-        let patterns = createPatterns(8)
-        patterns = patterns.filter(p => p.p.substr(0, 4) !== p.p.substr(4, 4))
-        return patterns.map((pp, i) => ({ p: pp.p.repeat(2), i }))
-      }
-      case 'Random-100': {
-        let patterns = createRandomPatterns(16, 100)
-        return patterns.map((pp, i) => ({ p: pp, i }))
-      }
-    }
+  private get notesWithIdx () { return this.notes.map((n, idx) => ({ noteStr: n, idx })) }
+  public get noteBlock () {
+    return this.notesWithIdx.slice(this.startFrom, this.startFrom + BLOCK_SIZE)
   }
-
-  public get notes () {
-    return [
-      this.patterns.slice(this.startFrom, this.startFrom + BLOCK_SIZE)
-      .map(p => ({
-        noteStr: mapPatternToNotes(p.p),
-        idx: p.i
-      })),
-      this.patterns.slice(this.startFrom + BLOCK_SIZE, this.startFrom + BLOCK_SIZE + 1)
-      .map(p => ({
-        noteStr: mapPatternToNotes(p.p),
-        idx: p.i
-      })),
-    ]
+  public get previewNote () {
+    return this.notesWithIdx[this.startFrom + BLOCK_SIZE]
   }
   
   public onNewBlock() {
-    this.currentIdx = (this.currentIdx + 1) % this.patterns.length
+    this.currentIdx = (this.currentIdx + 1) % this.notes.length
   }
 
   public onSelect (idx: number) {
     if (this.currentIdx === idx) {
       (this.$refs['ticker'] as any).onClick()
     } else {
-      (this.$refs['ticker'] as any).onStart()
+      if (this.previewNote && idx === this.previewNote.idx) {
+        this.currentIdx = this.previewNote.idx
+      } else {
+        (this.$refs['ticker'] as any).onStart()
+      }
     }
     this.currentIdx = idx;
   }

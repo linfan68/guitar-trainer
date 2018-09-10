@@ -23,7 +23,9 @@
     "typescript": "^3.0.0",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17",
-    "ali-oss": "6.0.1"
+    "ali-oss": "6.0.1",
+    "node-sass": "4.9.3",
+    "sass-loader": "7.1.0"
   },
   "postcss": {
     "plugins": {

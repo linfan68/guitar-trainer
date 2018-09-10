@@ -1,6 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { Howl } from 'howler'
-import { setInterval } from 'timers';
 
 @Component
 export default class Ticker extends Vue {
@@ -16,6 +15,7 @@ export default class Ticker extends Vue {
   public totalNotes: number = 0
   public ticking: boolean = false
   public dingAt: number = 0
+  public alternateBars:boolean = false
 
   public get notesPerBeat () {
     return Math.round(this.beatLength / this.noteLength)
@@ -31,8 +31,15 @@ export default class Ticker extends Vue {
   public get totalBars () {
     return Math.floor(this.totalBeats / this.beatsPerBar)
   }
-  public get currentBlock() {
+  public get rawBlock () {
     return Math.floor(this.totalBeats / this.beatsPerBar / this.barsPerBlock)
+  }
+  public get currentBlock() {
+    if (!this.alternateBars) return this.rawBlock
+    else {
+      // 1 - 2 - 1 - 2 ...pattern
+      return Math.floor(this.rawBlock / 3) * 2 + (this.rawBlock % 3 === 0 ? 0 : 1) 
+    }
   }
   @Watch('currentBlock') public currentBlockChanged(val: Ticker['currentBlock']) {
     if (val !== 0) {
@@ -88,6 +95,15 @@ export default class Ticker extends Vue {
     if (this._timer) {
       window.clearInterval(this._timer)
       this._timer = undefined
+    }
+  }
+  public newPage () {
+    if (this.bpm <= 210) return
+    if (this.ticking) {
+      this.onStop()
+      setTimeout(() => {
+        this.onStart()
+      }, 200)
     }
   }
   public onClick () {
