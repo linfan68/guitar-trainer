@@ -7,5 +7,3 @@
 
 <script lang="ts" src="./StaveLine.ts">
 </script>
-
-</style>

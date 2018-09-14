@@ -12,6 +12,7 @@
       <div class='options'>
         <rhythm-bank :notes.sync="notes" />
       </div>
+      <midi-player></midi-player>
     </div>
 
     <div class='content'>

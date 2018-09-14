@@ -2,11 +2,12 @@ import { Component, Vue, Watch } from 'vue-property-decorator'
 import StaveLine from './components/StaveLine.vue'
 import Ticker from './components/Ticker.vue'
 import RhythmBank from './components/RhythmBank.vue'
+import MidiPlayer from './components/MidiPlayer.vue'
 
 
 const BLOCK_SIZE = 5
 @Component({
-  components: { StaveLine, Ticker, RhythmBank },
+  components: { StaveLine, Ticker, RhythmBank, MidiPlayer },
 })
 export default class App extends Vue {
   public currentIdx = 0

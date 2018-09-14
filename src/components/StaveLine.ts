@@ -1,5 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-require('../vextab-div')
+require('../thirdparty/vextab-div')
 
 declare const VexTab: any
 declare const Artist: any
@@ -32,6 +32,7 @@ export default class StaveLine extends Vue {
     try {
         vextab.parse(`tabstave notation=true tablature=false\n notes ${val}\n`)
         artist.draw(renderer)
+        console.log(artist.getPlayerData())
     } catch (e) {
         console.log(e);
     }

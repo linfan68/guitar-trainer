@@ -236,3 +236,4 @@ function MidiFile(data) {
 		'tracks': tracks
 	}
 }
+global.MidiFile = MidiFile

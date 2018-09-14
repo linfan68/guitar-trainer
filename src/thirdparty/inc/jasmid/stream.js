@@ -67,3 +67,4 @@ function Stream(str) {
 		'readVarInt': readVarInt
 	}
 }
+global.Stream = Stream

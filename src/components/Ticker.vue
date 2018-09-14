@@ -24,7 +24,8 @@
             :class="{'beat-dot-da': dot.v === 1, 'beat-dot-ding': dot.v === 2}" ></div>
         </el-radio-button>
       </el-radio-group>
-      
+      <div ref='boo'>
+      </div>
       <!-- <div>
         <el-checkbox v-model="alternateBars" label="AltBar" border></el-checkbox>
       </div> -->

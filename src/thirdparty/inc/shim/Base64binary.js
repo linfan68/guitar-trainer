@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-var Base64Binary = {
+Base64Binary = {
 	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
 	/* will return a  Uint8Array type */
@@ -79,3 +79,4 @@ var Base64Binary = {
 		return uarray;	
 	}
 };
+console.log('load base64 binary')

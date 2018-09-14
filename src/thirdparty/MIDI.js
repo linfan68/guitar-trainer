@@ -1496,20 +1496,20 @@ if (typeof MIDI === 'undefined') MIDI = {};
 				};
 			} else {
 				xhr.addEventListener('progress', function(evt) {
-					var totalBytes = 0;
-					if (evt.lengthComputable) {
-						totalBytes = evt.total;
-					} else if (xhr.totalBytes) {
-						totalBytes = xhr.totalBytes;
-					} else {
-						var rawBytes = parseInt(xhr.getResponseHeader('Content-Length-Raw'));
-						if (isFinite(rawBytes)) {
-							xhr.totalBytes = totalBytes = rawBytes;
-						} else {
-							return;
-						}
-					}
-					onprogress.call(xhr, evt, evt.loaded / totalBytes);
+					// var totalBytes = 0;
+					// if (evt.lengthComputable) {
+					// 	totalBytes = evt.total;
+					// } else if (xhr.totalBytes) {
+					// 	totalBytes = xhr.totalBytes;
+					// } else {
+					// 	var rawBytes = parseInt(xhr.getResponseHeader('Content-Length-Raw'));
+					// 	if (isFinite(rawBytes)) {
+					// 		xhr.totalBytes = totalBytes = rawBytes;
+					// 	} else {
+					// 		return;
+					// 	}
+					// }
+					// onprogress.call(xhr, evt, evt.loaded / totalBytes);
 				});
 			}
 		}

@@ -100,3 +100,4 @@ function Replayer(midiFile, timeWarp, eventProcessor, bpm) {
 		}
 	};
 };
+global.Replayer = Replayer

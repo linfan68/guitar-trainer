@@ -13,7 +13,8 @@
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
-    "smoothscroll-polyfill": "0.4.3"
+    "smoothscroll-polyfill": "0.4.3",
+    "midi-writer-js": "1.5.2"
   },
   "devDependencies": {
     "@types/howler": "2.0.5",
