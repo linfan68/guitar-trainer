@@ -7,10 +7,12 @@ require('./inc/jasmid/replayer')
 require('./inc/jasmid/stream')
 require('./MIDI')
 require('../thirdparty/vextab-div')
+var Tonal = require("tonal");
+var MidiWriter = require('midi-writer-js')
 
-declare const VexTab: any
-declare const Artist: any
-declare const Vex: any
+import * as Vex from 'vexflow'
+import { start } from 'repl';
+import { SimplePlayer } from '@/thirdparty/SimplePlayer';
 
 declare const MIDI: any
 
@@ -44,28 +46,117 @@ export module MidiPlay {
     });
   }
 
-  export async function testSingleNote (note: number) {   
-    const velocity = 127 // how hard the note hits
-
-    
-    const artist = new Artist(10, 10, 700, {scale: 0.8});
-    const vextab = new VexTab(artist)
-    vextab.parse(`tabstave notation=true tablature=false\n notes :q Cn-D-E/4 F#/5\n`)
-    console.log(vextab)
-    return
-    // play the note
-    MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
-    MIDI.setVolume(0, 127)
-    console.log(new Date().getTime())
-    Array(64).fill(0).map((v, i) => i/16)
-    .forEach(delay => {
-      MIDI.chordOn(0, [note, note + 4, note + 7], velocity, delay)
-      MIDI.chordOn(0, [note, note + 4, note + 7], delay + 1/32)
-    })
-    console.log(new Date().getTime())
-
-
-    console.log('started')
+  export interface PlayConfig {
+    voices: Vex.Flow.Voice[][]
+    repeat: number
+    bpm: number
+    notePerBeat: number
+    prepareBeats: number
+    playVoice: boolean
+    velocity: number
+    dingNote: number
+    daNote: number
+    prepareNote: number
+    dingAt: number
+  }
+  const defaultConfig: PlayConfig = {
+    voices: [],
+    playVoice: false,
+    repeat: 1,
+    bpm: 30,
+    prepareBeats: 1,
+    notePerBeat: 1/4,
+    velocity: 64,
+    dingNote: 100,
+    daNote: 50,
+    prepareNote: 30,
+    dingAt: 0
   }
 
+
+  export function playVexVoice (inputConfig: Partial<PlayConfig>) {
+    const config = {
+      ...defaultConfig,
+      ...inputConfig
+    }
+
+    const player = new SimplePlayer()
+    MIDI.setVolume(0, config.velocity!)
+
+    const beatDuration = 60 / config.bpm
+    const noteDuration = beatDuration / config.notePerBeat!
+    const durationMap: {[key:string]: number} = {
+      'h': 1/2 * noteDuration,
+      'q': 1/4 * noteDuration,
+      '8': 1/8 * noteDuration,
+      '16': 1/16 * noteDuration
+    }
+    
+    player.addEvent(-1, () => {
+      MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
+      MIDI.programChange(1, instrumnets['woodblock'])
+      return 0
+    })
+    
+    const addTicks = (startTime: number, duration: number, isPrepare: boolean) => {
+      let time = 0
+      while (time < duration) {
+        const d = durationMap['16']
+        let n = config.daNote
+        if (Math.round(time / d) % 4 === config.dingAt) {
+          n = config.dingNote
+        }
+        if (isPrepare) n = config.prepareNote
+        player.addEvent(startTime + time, () => {
+          MIDI.noteOn(1, n, config.velocity, 0)
+          MIDI.noteOff(1, n, d)
+          return d
+        })
+        time += d
+      }
+      return duration
+    }
+
+    let currentTime = 0
+    if (config.prepareBeats) {
+      currentTime += addTicks(0, config.prepareBeats * beatDuration, true)
+    }
+    const addVoices = (startTime: number) => {
+      let time = 0
+      Array(config.repeat).fill(0).forEach(v => {
+        config.voices.forEach(vv => {
+          vv.forEach(v => {
+            v.getTickables().forEach(t => {
+              const n = (t as Vex.Flow.StaveNote)
+              const keys = n.getKeyProps().map(kp => kp.int_value)
+              let d = durationMap[n.getDuration()]
+              const tup = n.getTuplet()
+              if (tup) {
+                d = d * (tup as any).getNotesOccupied() / tup.getNotes().length
+              }
+              if (n.getDots()) d *= 1.5
+              if (n.getNoteType() !== 'r' && config.playVoice) {
+                player.addEvent(startTime + time, () => {
+                  MIDI.chordOn(0, keys, config.velocity, 0)
+                  MIDI.chordOff(0, keys, d)
+                  return d
+                })
+              } else {
+                player.addEvent(startTime + time, () => {
+                  return d
+                })
+              }
+              time += d
+            })
+          })
+        })
+      })
+      return time
+    }
+  
+    const voiceDuration = addVoices(currentTime)
+    addTicks(currentTime, voiceDuration, false)
+
+    return player
+  }
 }

@@ -7,15 +7,22 @@
             v-for="item in startFromOptions"
             :key="item" :label="item" :value="item"/>
         </el-select>
-        <ticker ref="ticker" @nextBlock="onNewBlock"/>
+        <ticker ref="ticker" @finishedPlay="onNewBlock" :note="currentNote"/>
       </div>
       <div class='options'>
         <rhythm-bank :notes.sync="notes" />
       </div>
-      <midi-player></midi-player>
+      <!-- <midi-player></midi-player> -->
     </div>
 
     <div class='content'>
+      <div
+        :style="{background: 'lightgrey', lineHeight: '50px'}"
+        class="stave-line-container"
+        @click="onSelect(startFrom - 1)"
+        >
+        上一页
+      </div>
       <div
         v-for="note in noteBlock" :key="note.noteStr + note.idx"
         :id="'stave-line-' + note.idx"

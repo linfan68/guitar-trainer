@@ -131,7 +131,7 @@ export function generateVtNotes(n: number, options: IGenerationOptions) {
   let patterns = generateSplits(n).map(p => {
     return p.split('').map(n => compose<NoteSpec>({
       duration: parseInt(n),
-      symbol: '(B/4)',
+      symbol: '(C/4.E/4.G/4)',
       rest: false
     }))
   })
@@ -153,7 +153,7 @@ export function generateTripleNotes(options: IGenerationOptions) {
   let patterns = ['222'].map(p => {
     return p.split('').map(n => compose<NoteSpec>({
       duration: parseInt(n),
-      symbol: '(B/4)',
+      symbol: '(C/4.E/4.G/4)',
       rest: false
     }))
   })

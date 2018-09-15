@@ -44,12 +44,18 @@ export default class App extends Vue {
   public get previewNote () {
     return this.notesWithIdx[this.startFrom + BLOCK_SIZE]
   }
+  public get currentNote () {
+    const current = this.notesWithIdx[this.currentIdx]
+    return current ? current.noteStr : ''
+  }
   
   public onNewBlock() {
     this.currentIdx = (this.currentIdx + 1) % this.notes.length
+    ;(this.$refs['ticker'] as any).onStart()
   }
 
   public onSelect (idx: number) {
+    if (idx < 0) return
     if (this.currentIdx === idx) {
       (this.$refs['ticker'] as any).onClick()
     } else {

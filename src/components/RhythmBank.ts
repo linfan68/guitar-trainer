@@ -12,8 +12,9 @@ export default class RhythmBank extends Vue {
   public rhythmIsRepeatOrRandom: boolean = false
   public rhythmIsRepeatOrRandomOptions = [{v: true, l: '重复'}, {v: false, l: '随机'}]
   public rhythmAddRest: boolean = true
-  public rhythmTriplesCount: number = 0
-  public rhythmTriplesCountOptions = [0, 1, 2, 3, 0.2].map(i => ({
+  public rhythmAddTupletRest: boolean = false
+  public rhythmTupletCount: number = 0
+  public rhythmTupletCountOptions = [0, 1, 2, 3, 0.2].map(i => ({
     v: i,
     l: (i === Math.round(i)) ? `${i}个三连音` : `${Math.round(i * 100)}%三连音`
   }))
@@ -29,13 +30,16 @@ export default class RhythmBank extends Vue {
       shuffle: true
     }
     const fourth = generateVtNotes(4, options)
-    const triplets = generateTripleNotes(options)
+    const triplets = generateTripleNotes({
+      ...options,
+      withRest: this.rhythmAddTupletRest
+    })
 
     if (this.rhythmIsRepeatOrRandom) {
       return [...fourth, ...triplets].map(p => [p, p, p, p].join(' '))
     }
     else {
-      return mixPatternsToBar(100, fourth, triplets, this.rhythmTriplesCount)
+      return mixPatternsToBar(100, fourth, triplets, this.rhythmTupletCount)
     }
     return []
   }

@@ -6,11 +6,9 @@ import { MidiPlay } from '../thirdparty/MidiPlay'
 export default class MidiPlayer extends Vue {
   public noteNumber: number = 50
   public async playNote () {
-    await MidiPlay.testSingleNote(this.noteNumber)
   }
   public async playTicker () {
     // await MidiPlay.testMidGen(this.noteNumber)
-    await MidiPlay.testMidiWriter()
   }
   public async changeNote(delta: number) {
     this.noteNumber += delta

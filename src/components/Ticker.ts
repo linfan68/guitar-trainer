@@ -1,5 +1,12 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-import { Howl } from 'howler'
+import * as Vex from 'vexflow'
+import { MidiPlay } from '@/thirdparty/MidiPlay'
+import { SimplePlayer } from '@/thirdparty/SimplePlayer';
+require('../thirdparty/vextab-div')
+
+declare const VexTab: any
+declare const Artist: any
+const Renderer = Vex.Flow.Renderer;
 
 @Component
 export default class Ticker extends Vue {
@@ -7,99 +14,85 @@ export default class Ticker extends Vue {
   @Prop({ default: 1/4 }) public beatLength: number
   @Prop({ default: 4 }) public beatsPerBar: number
   @Prop({ default: 1 }) public prepareBeats: number
+  @Prop({ default: null }) public note: string | null
   
-  public barsPerBlock: number = 4
-  public barsPerBlockOptoins: number[] = [0.5, 1, 2, 4, 8]
-  public bpm: number = 120
-  public bpmOptions: number[] = [100, 120, 160, 200, 240]
-  public totalNotes: number = 0
-  public ticking: boolean = false
+  public barRepeat: number = 4
+  public barRepeatOptoins: number[] = [0.5, 1, 2, 4, 8]
+  public bpm: number = 30
+  public bpmOptions: number[] = [20, 30, 40, 50, 60]
+  public playing: boolean = false
   public dingAt: number = 0
-  public alternateBars:boolean = false
+  public playVoice: boolean = false
+  
+  public get allConfigs () {
+    return [
+      this.barRepeat,
+      this.barRepeatOptoins,
+      this.bpm,
+      this.bpmOptions,
+      this.playing,
+      this.dingAt,
+      this.playVoice,
+      this.note
+    ]
+  }
+
+  @Watch('allConfigs') allConfigsChanged (val: Ticker['allConfigs']) {
+    if (this._player) this.onStart()
+  }
 
   public get notesPerBeat () {
     return Math.round(this.beatLength / this.noteLength)
   }
-  public get currentNote () {
-    if (this.totalNotes < 0) return 0
-    return (this.totalNotes % this.notesPerBeat)
-  }
-  public get totalBeats () {
-    if (this.totalNotes < 0) return 0
-    return (this.totalNotes / this.notesPerBeat)
-  }
-  public get totalBars () {
-    return Math.floor(this.totalBeats / this.beatsPerBar)
-  }
-  public get rawBlock () {
-    return Math.floor(this.totalBeats / this.beatsPerBar / this.barsPerBlock)
-  }
-  public get currentBlock() {
-    if (!this.alternateBars) return this.rawBlock
-    else {
-      // 1 - 2 - 1 - 2 ...pattern
-      return Math.floor(this.rawBlock / 3) * 2 + (this.rawBlock % 3 === 0 ? 0 : 1) 
-    }
-  }
-  @Watch('currentBlock') public currentBlockChanged(val: Ticker['currentBlock']) {
-    if (val !== 0) {
-      this.$emit('nextBlock', val)
-    }
-  }
-
-  public get beatDots () {
-    const dots = Array(this.notesPerBeat).fill(0).map((v, idx) => ({key: idx, v}))
-    dots[this.currentNote].v = 1
-    if (this.currentNote === this.dingAt) {
-      dots[this.currentNote].v = 2
-    }
-    return dots
-  }
-  private _sounds: Howl[]
   public mounted () {
-    this._sounds = [
-      new Howl({ src: [require('../assets/ding.wav')] }),
-      new Howl({ src: [require('../assets/da.wav')] }),
-      new Howl({ src: [require('../assets/ka.wav')] })
-    ]
   }
 
-  private _timer: number | undefined
-  public onStart () {
-    this.ticking = true
-    if (this._timer) {
-      window.clearInterval(this._timer)
-      this._timer = undefined
-    }
+  private _player: SimplePlayer | undefined
+  public async onStart () {
+    this.onStop()
     console.log('onStart')
-    this.totalNotes = -this.notesPerBeat - 1
-    this._timer = window.setInterval(() => {
-      this.totalNotes++
-      if (this.totalNotes < 0) {
-        this._sounds[2].play()
-      }
-      else {
-        if (this.dingAt === this.currentNote) {
-          this._sounds[0].play()
-        } else {
-          this._sounds[1].play()
-        }
-      }
-    }, 1000 * 60 / this.bpm)
-    console.log(this._timer)
+    await this.$nextTick()
+    if (!this.note) return
+    // Create VexFlow Renderer from canvas element with id #boo.
+    const ele = this.$refs['boo'] as HTMLElement
+    while (ele.hasChildNodes()) {
+        ele.removeChild(ele.childNodes[0]);
+    }
+    const renderer = new Renderer(ele, Renderer.Backends.SVG);
+
+    const artist = new Artist(10, 10, 70, {scale: 0.1});
+    const vextab = new VexTab(artist);
+
+    try {
+        vextab.parse(`tabstave notation=true tablature=false\n notes ${this.note}\n`)
+        artist.draw(renderer)
+        const voices: Vex.Flow.Voice[][] = artist.getPlayerData().voices
+        this._player = MidiPlay.playVexVoice({
+          voices: voices,
+          bpm: this.bpm,
+          repeat: this.barRepeat,
+          playVoice: this.playVoice
+        })
+        this._player.start().then(() => {
+          this.onStop()
+          this.$emit('finishedPlay')
+        })
+    } catch (e) {
+        console.log(e);
+    }
+    this.playing = true
   }
+
   public onStop () {
-    this.totalNotes = -this.notesPerBeat - 1
-    this.ticking = false
-    console.log(this._timer)
-    if (this._timer) {
-      window.clearInterval(this._timer)
-      this._timer = undefined
+    console.log('onStop')
+    if (this._player) {
+      this._player.stop()
+      this._player = undefined
     }
   }
   public newPage () {
     if (this.bpm <= 210) return
-    if (this.ticking) {
+    if (this._player) {
       this.onStop()
       setTimeout(() => {
         this.onStart()
@@ -107,7 +100,7 @@ export default class Ticker extends Vue {
     }
   }
   public onClick () {
-    if (this.ticking) this.onStop()
+    if (this._player) this.onStop()
     else this.onStart()
   }
 }
