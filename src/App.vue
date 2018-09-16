@@ -7,7 +7,7 @@
             v-for="item in startFromOptions"
             :key="item" :label="item" :value="item"/>
         </el-select>
-        <ticker ref="ticker" @finishedPlay="onNewBlock" :note="currentNote"/>
+        <ticker ref="ticker" @finishedPlay="onNewLine" :note="currentNote"/>
       </div>
       <div class='options'>
         <rhythm-bank :notes.sync="notes" />

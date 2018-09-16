@@ -49,20 +49,19 @@ export default class App extends Vue {
     return current ? current.noteStr : ''
   }
   
-  public onNewBlock() {
+  public onNewLine() {
     this.currentIdx = (this.currentIdx + 1) % this.notes.length
-    ;(this.$refs['ticker'] as any).onStart()
   }
 
   public onSelect (idx: number) {
     if (idx < 0) return
     if (this.currentIdx === idx) {
-      (this.$refs['ticker'] as any).onClick()
+      (this.$refs['ticker'] as any).onClick(true)
     } else {
       if (this.previewNote && idx === this.previewNote.idx) {
         this.currentIdx = this.previewNote.idx
       } else {
-        (this.$refs['ticker'] as any).onStart()
+        (this.$refs['ticker'] as any).onClick(false)
       }
     }
     this.currentIdx = idx;

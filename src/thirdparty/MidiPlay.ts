@@ -46,6 +46,12 @@ export module MidiPlay {
     });
   }
 
+  export async function playNote (note: number) {
+    MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
+    MIDI.chordOn(0, [note], 127, 0)
+    MIDI.chordOff(0, [note], 0.5)
+  }
+
   export interface PlayConfig {
     voices: Vex.Flow.Voice[][]
     repeat: number
@@ -58,6 +64,7 @@ export module MidiPlay {
     daNote: number
     prepareNote: number
     dingAt: number
+    beatCallback: ((i: number) => void) | undefined
   }
   const defaultConfig: PlayConfig = {
     voices: [],
@@ -70,7 +77,8 @@ export module MidiPlay {
     dingNote: 100,
     daNote: 50,
     prepareNote: 30,
-    dingAt: 0
+    dingAt: 0,
+    beatCallback: undefined
   }
 
 
@@ -103,11 +111,15 @@ export module MidiPlay {
       while (time < duration) {
         const d = durationMap['16']
         let n = config.daNote
-        if (Math.round(time / d) % 4 === config.dingAt) {
+        const beatCount = Math.round(time / d) % 4
+        if (beatCount === config.dingAt) {
           n = config.dingNote
         }
         if (isPrepare) n = config.prepareNote
         player.addEvent(startTime + time, () => {
+          if (!isPrepare && config.beatCallback) {
+            config.beatCallback(beatCount)
+          } 
           MIDI.noteOn(1, n, config.velocity, 0)
           MIDI.noteOff(1, n, d)
           return d

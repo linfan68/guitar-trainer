@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="ticker">
+    <div class="ticker-loading" v-if="!isReadyPlay" v-loading="isLoading">
+      <el-button type="danger" class="start-btn" @click="begin">开始</el-button>
+    </div>
+    <div class="ticker" v-if="isReadyPlay">
       <el-select class="option-block" v-model="barRepeat">
         <el-option
           v-for="item in barRepeatOptoins"
@@ -17,13 +20,13 @@
         </el-option>
       </el-select>
       
-      <!-- <el-radio-group v-model="dingAt" class="beat-bar">
+      <el-radio-group v-model="dingAt" class="beat-bar">
         <el-radio-button v-for="dot in beatDots" :key="dot.key" :label="dot.key" >
           <div
             class="beat-dot"
             :class="{'beat-dot-da': dot.v === 1, 'beat-dot-ding': dot.v === 2}" ></div>
         </el-radio-button>
-      </el-radio-group> -->
+      </el-radio-group>
       <el-checkbox class="option-block" v-model="playVoice" label="跟奏" border></el-checkbox>  
       <div ref='boo'>
       </div>
@@ -39,6 +42,15 @@
 </script>
 
 <style lang="scss" scoped>
+.ticker-loading {
+  display: flex;
+  width: 200px;
+  justify-content: center;
+
+  .start-btn {
+    margin: 5px;
+  }
+}
 .ticker {
   display: flex;
   flex-wrap: nowrap;
