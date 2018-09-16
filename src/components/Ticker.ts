@@ -45,6 +45,7 @@ export default class Ticker extends Vue {
   }
 
   @Watch('note') noteChanged (val: Ticker['note']) {
+    return
     console.log('note start')
     this.onStart(false)
   }
@@ -58,6 +59,7 @@ export default class Ticker extends Vue {
 
   public async mounted () {
     this.isLoading = true
+    console.log('Ticker mounted')
     await MidiPlay.load()
     this.isLoading = false
   }

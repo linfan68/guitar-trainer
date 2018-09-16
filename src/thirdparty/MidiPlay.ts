@@ -18,12 +18,12 @@ declare const MIDI: any
 
 // https://www.midi.org/specifications-old/item/gm-level-1-sound-set
 const instrumnets = {
+  // 'synth_drum': 118,
+  // 'tinkle_bell': 112,
+  // 'steel_drums': 114,
+  // 'melodic_tom': 117,
   'acoustic_grand_piano': 0,
-  'synth_drum': 118,
-  'woodblock': 115,
-  'tinkle_bell': 112,
-  'steel_drums': 114,
-  'melodic_tom': 117
+  'woodblock': 115
 }
 enum MidiMessage {
   On = 144,
@@ -32,18 +32,24 @@ enum MidiMessage {
 
 export module MidiPlay {
   export async function load () {
+    console.log('====MidiPlay.load() ====')
     return new Promise(res => {
       MIDI.loadPlugin({
-        soundfontUrl: 'http://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/',
+        soundfontUrl: 'http://guitar-trainer.oss-cn-beijing.aliyuncs.com/sound-fonts/FluidR3_GM/',
+        // soundfontUrl: 'http://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/',
         instruments: Object.keys(instrumnets),
-        onsuccess: () => res()
+        onsuccess: () => {
+          console.log('====MidiPlay.load() DONE ====')
+          res()
+        }
       })
     })
-    MIDI.Player.removeListener(); // removes current listener.
-    MIDI.Player.addListener(function(data: any) { // set it to your own function!
-        const end = data.end; // time when song ends
-        console.log(data.note + ':' + MidiMessage[data.message] + '|' + MIDI.Player.currentTime)
-    });
+  }
+
+  export async function activate () {
+    MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
+    MIDI.chordOn(0, [30], 1, 0)
+    MIDI.chordOff(0, [30], 0.005)
   }
 
   export async function playNote (note: number) {
@@ -83,6 +89,7 @@ export module MidiPlay {
 
 
   export function playVexVoice (inputConfig: Partial<PlayConfig>) {
+    activate()
     const config = {
       ...defaultConfig,
       ...inputConfig

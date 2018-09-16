@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div class="ticker-loading" v-if="!isReadyPlay" v-loading="isLoading">
-      <el-button type="danger" class="start-btn" @click="begin">开始</el-button>
-    </div>
-    <div class="ticker" v-if="isReadyPlay">
+    <div class="ticker" v-loading="isLoading">
       <el-select class="option-block" v-model="barRepeat">
         <el-option
           v-for="item in barRepeatOptoins"
