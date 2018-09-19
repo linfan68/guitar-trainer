@@ -48,8 +48,8 @@ export module MidiPlay {
 
   export async function activate () {
     MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
-    MIDI.chordOn(0, [30], 1, 0)
-    MIDI.chordOff(0, [30], 0.005)
+    MIDI.chordOn(0, [60], 1, 0)
+    MIDI.chordOff(0, [30], 0.05)
   }
 
   export async function playNote (note: number) {
@@ -65,10 +65,10 @@ export module MidiPlay {
     notePerBeat: number
     prepareBeats: number
     playVoice: boolean
-    velocity: number
     dingNote: number
     daNote: number
     prepareNote: number
+    tickDuration: string
     dingAt: number
     beatCallback: ((i: number) => void) | undefined
   }
@@ -77,9 +77,9 @@ export module MidiPlay {
     playVoice: false,
     repeat: 1,
     bpm: 30,
+    tickDuration: '16',
     prepareBeats: 1,
     notePerBeat: 1/4,
-    velocity: 64,
     dingNote: 100,
     daNote: 50,
     prepareNote: 30,
@@ -96,7 +96,6 @@ export module MidiPlay {
     }
 
     const player = new SimplePlayer()
-    MIDI.setVolume(0, config.velocity!)
 
     const beatDuration = 60 / config.bpm
     const noteDuration = beatDuration / config.notePerBeat!
@@ -109,14 +108,16 @@ export module MidiPlay {
     
     player.addEvent(-1, () => {
       MIDI.programChange(0, instrumnets['acoustic_grand_piano'])
+      MIDI.setVolume(0, 63)
       MIDI.programChange(1, instrumnets['woodblock'])
+      MIDI.setVolume(1, 127)
       return 0
     })
     
     const addTicks = (startTime: number, duration: number, isPrepare: boolean) => {
       let time = 0
-      while (time < duration) {
-        const d = durationMap['16']
+      while (time < duration - 0.001) {
+        const d = durationMap[config.tickDuration]
         let n = config.daNote
         const beatCount = Math.round(time / d) % 4
         if (beatCount === config.dingAt) {
@@ -127,7 +128,7 @@ export module MidiPlay {
           if (!isPrepare && config.beatCallback) {
             config.beatCallback(beatCount)
           } 
-          MIDI.noteOn(1, n, config.velocity, 0)
+          MIDI.noteOn(1, n, 127, 0)
           MIDI.noteOff(1, n, d)
           return d
         })
@@ -156,7 +157,7 @@ export module MidiPlay {
               if (n.getDots()) d *= 1.5
               if (n.getNoteType() !== 'r' && config.playVoice) {
                 player.addEvent(startTime + time, () => {
-                  MIDI.chordOn(0, keys, config.velocity, 0)
+                  MIDI.chordOn(0, keys, 63, 0)
                   MIDI.chordOff(0, keys, d)
                   return d
                 })

@@ -25,25 +25,11 @@ function estimateLevel (pattern: string) {
   return score
 }
 
-export function createRandomPatterns (size: number, count: number) {
-  const base = createPatterns(4)
-  return Array(count).fill(0).map(v => {
-    return Array(size / 4).fill(0).map(vv => {
-      return base[Math.floor(Math.random() * base.length)].p
-    }).join('')
-  })
-}
-
-export function createPatterns (n: number) {
+export function create01Patterns (n: number) {
   return Array(Math.pow(2, n)).fill(0).map((v, idx) => idx)
   .filter(idx => idx > 0)
   .map(i => i.toString(2).padStart(n, '0'))
   .filter(p => !breakIntoParts(p, 4).includes('0000') )
-  .map(p => ({
-    p: p,
-    score: estimateLevel(p)
-  }))
-  .sort((a, b) => a.score - b.score)
 }
 
 export function mapPatternToNotes(p: string){
@@ -127,8 +113,21 @@ export interface IGenerationOptions {
   withRest?: boolean
   shuffle?: boolean
 }
-export function generateVtNotes(n: number, options: IGenerationOptions) {
-  let patterns = generateSplits(n).map(p => {
+
+export function generate16thNotes(options: IGenerationOptions) {
+  let patterns = ['1111'].map(p => {
+    return p.split('').map(n => compose<NoteSpec>({
+      duration: parseInt(n),
+      symbol: '(C/4.E/4.G/4)',
+      rest: false
+    }))
+  })
+  patterns = applyOptions(options, patterns)
+  return patterns.map(n => toVexTabNotation(n))
+}
+
+export function generate4thNotes(options: IGenerationOptions) {
+  let patterns = generateSplits(4).map(p => {
     return p.split('').map(n => compose<NoteSpec>({
       duration: parseInt(n),
       symbol: '(C/4.E/4.G/4)',

@@ -2,11 +2,11 @@
   <div id="app">
     <div class='controls'>
       <div class="main-control">
-        <el-select v-model="startFrom" class="option-block" :style="{ width: '70px' }">
+        <!-- <el-select v-model="startFrom" class="option-block" :style="{ width: '70px' }">
           <el-option
             v-for="item in startFromOptions"
             :key="item" :label="item" :value="item"/>
-        </el-select>
+        </el-select> -->
         <ticker ref="ticker" @finishedPlay="onNewLine" :note="currentNote"/>
       </div>
       <div class='options'>
@@ -89,7 +89,7 @@ body {
         vertical-align: middle;
         line-height: 100%;
         font-size: 40px;
-        width: 100px;
+        width: 50px;
         height: 40px;
         align-self: center;
       }

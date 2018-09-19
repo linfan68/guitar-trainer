@@ -24,9 +24,11 @@
             :class="{'beat-dot-da': dot.v === 1, 'beat-dot-ding': dot.v === 2}" ></div>
         </el-radio-button>
       </el-radio-group>
+      <el-checkbox class="option-block" v-model="tickAt16th" label="1/16" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="playVoice" label="跟奏" border></el-checkbox>  
       <div ref='boo'>
       </div>
+      <el-button type="danger" class="start-btn" @click="onActivate">开始</el-button>
       <!-- <div>
         <el-checkbox v-model="alternateBars" label="AltBar" border></el-checkbox>
       </div> -->

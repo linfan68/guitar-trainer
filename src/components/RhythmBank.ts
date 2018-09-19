@@ -1,5 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-import { createPatterns, mapPatternToNotes, createRandomPatterns, generateSplits, generateVtNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar } from '@/scripts/createPatterns'
+import { generate4thNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar, generate16thNotes } from '@/scripts/createPatterns'
 
 enum BankType {
   Rhythm = '节奏练习'
@@ -12,6 +12,7 @@ export default class RhythmBank extends Vue {
   public rhythmIsRepeatOrRandom: boolean = false
   public rhythmIsRepeatOrRandomOptions = [{v: true, l: '重复'}, {v: false, l: '随机'}]
   public rhythmAddRest: boolean = true
+  public rhythm16thOnly: boolean = false
   public rhythmAddTupletRest: boolean = false
   public rhythmTupletCount: number = 0
   public rhythmTupletCountOptions = [0, 1, 2, 3, 0.2].map(i => ({
@@ -29,7 +30,7 @@ export default class RhythmBank extends Vue {
       withRest: this.rhythmAddRest,
       shuffle: true
     }
-    const fourth = generateVtNotes(4, options)
+    const fourth = this.rhythm16thOnly ? generate16thNotes(options) : generate4thNotes(options)
     const triplets = generateTripleNotes({
       ...options,
       withRest: this.rhythmAddTupletRest

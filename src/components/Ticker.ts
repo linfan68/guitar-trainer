@@ -17,11 +17,11 @@ export default class Ticker extends Vue {
   @Prop({ default: null }) public note: string | null
   
   public isLoading: boolean = true
-  public isReadyPlay: boolean = false
   public barRepeat: number = 4
   public barRepeatOptoins: number[] = [0.5, 1, 2, 4, 8]
-  public bpm: number = 30
-  public bpmOptions: number[] = [20, 30, 40, 50, 60]
+  public bpm: number = 50
+  public bpmOptions: number[] = [20, 30, 40, 50, 60, 70, 80, 90, 100, 120]
+  public tickAt16th: boolean = false
   public playing: boolean = false
   public dingAt: number = 0
   public beatCount: number = -1
@@ -41,13 +41,12 @@ export default class Ticker extends Vue {
 
   @Watch('allConfigs') allConfigsChanged (val: Ticker['allConfigs']) {
     console.log('allConfigs start')
-    if (this._player) this.onStart(true)
+    if (this.playing && this._player) this.onStart(true)
   }
 
   @Watch('note') noteChanged (val: Ticker['note']) {
-    return
     console.log('note start')
-    this.onStart(false)
+    if (this.playing) this.onStart(false)
   }
 
   public get beatDots () {
@@ -91,8 +90,8 @@ export default class Ticker extends Vue {
           repeat: this.barRepeat,
           dingAt: this.dingAt,
           playVoice: this.playVoice,
-          velocity: 127,
-          prepareBeats: 1, // withPrepare ? 1 : 0,
+          tickDuration: this.tickAt16th ? '16' : 'q',
+          prepareBeats: this.tickAt16th ? 1 : 4, // withPrepare ? 1 : 0,
           beatCallback: beatCount => {
             this.beatCount = beatCount
           }
@@ -129,8 +128,7 @@ export default class Ticker extends Vue {
     else this.onStart(true)
   }
 
-  public begin () {
-    MidiPlay.playNote(60)
-    this.isReadyPlay = true
+  public onActivate () {
+    MidiPlay.activate()
   }
 }
