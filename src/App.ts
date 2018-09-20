@@ -13,6 +13,11 @@ export default class App extends Vue {
   public currentIdx = 0
   public startFrom: number = 0
   public notes: string[] = []
+
+  public get paging () {
+    return this.notes.length > 10
+  }
+
   public get startFromOptions() {
      return Array(Math.ceil(this.notes.length / BLOCK_SIZE))
     .fill(0).map((v, idx) => idx * BLOCK_SIZE)
@@ -39,10 +44,16 @@ export default class App extends Vue {
 
   private get notesWithIdx () { return this.notes.map((n, idx) => ({ noteStr: n, idx })) }
   public get noteBlock () {
-    return this.notesWithIdx.slice(this.startFrom, this.startFrom + BLOCK_SIZE)
+    if (this.paging)
+      return this.notesWithIdx.slice(this.startFrom, this.startFrom + BLOCK_SIZE)
+    else
+    return this.notesWithIdx
   }
   public get previewNote () {
-    return this.notesWithIdx[this.startFrom + BLOCK_SIZE]
+    if (this.paging)
+      return this.notesWithIdx[this.startFrom + BLOCK_SIZE]
+    else
+      return undefined
   }
   public get currentNote () {
     const current = this.notesWithIdx[this.currentIdx]

@@ -30,7 +30,7 @@ export default class StaveLine extends Vue {
     const vextab = new VexTab(artist);
 
     try {
-        vextab.parse(`tabstave notation=true tablature=false\n notes ${val}\n`)
+        vextab.parse(`${val}\n`)
         artist.draw(renderer)
     } catch (e) {
         console.log(e);

@@ -17,6 +17,12 @@
       <el-checkbox class="option-block" v-model="rhythmAddTupletRest" label="休止3" border></el-checkbox>  
       <!-- <div>{{notes.length}}条</div> -->
     </div>
+    <div v-if="isScale">
+      <el-select class="option-block" v-model="scaleRoot">
+        <el-option v-for="i in scaleRootOptions" :key="i" :label="i" :value="i" />
+      </el-select>
+      <el-checkbox class="option-block" v-model="scaleReverse" label="反向" border></el-checkbox>
+    </div>
   </div>
 </template>
 

@@ -38,3 +38,8 @@ export function shuffle<T>(a: T[]) {
   }
   return a
 }
+
+export function partition<T>(a: T[], n: number): T[][] {
+  return Array(Math.ceil(a.length / n)).fill(0).map((v, idx) => idx * n)
+  .map(start => a.slice(start, start + n))
+}
