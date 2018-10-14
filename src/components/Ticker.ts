@@ -6,26 +6,32 @@ import { SimplePlayer } from '../thirdparty/SimplePlayer'
 
 declare const VexTab: any
 declare const Artist: any
-const Renderer = Vex.Flow.Renderer;
+const Renderer = Vex.Flow.Renderer
+
+export interface ITcker {
+  playStop(): void
+}
 
 @Component
-export default class Ticker extends Vue {
+export default class Ticker extends Vue implements ITcker {
   @Prop({ default: 1/16 }) public noteLength: number
   @Prop({ default: 1/4 }) public beatLength: number
   @Prop({ default: 4 }) public beatsPerBar: number
   @Prop({ default: 1 }) public prepareBeats: number
   @Prop({ default: null }) public note: string | null
+  @Prop({ default: null }) public nextNote: string | null
   
   public isLoading: boolean = true
   public barRepeat: number = 4
-  public barRepeatOptoins: number[] = [0.5, 1, 2, 4, 8]
-  public bpm: number = 50
-  public bpmOptions: number[] = [20, 30, 40, 50, 60, 70, 80, 90, 100, 120]
+  public barRepeatOptoins: number[] = [1, 2, 4, 8, 16]
+  public bpm: number = 30
+  public bpmOptions: number[] = [30, 33, 36, 40, 44, 48, 53, 58, 60, 64, 71, 79, 86, 94, 103, 114, 120, 125, 138, 150, 167, 180]
   public tickAt16th: boolean = false
-  public playing: boolean = false
+  public isPlaying: boolean = false
   public dingAt: number = 0
   public beatCount: number = -1
   public playVoice: boolean = false
+  public continuePlayWoPrepare: boolean = false
   
   public get allConfigs () {
     return [
@@ -33,20 +39,19 @@ export default class Ticker extends Vue {
       this.barRepeatOptoins,
       this.bpm,
       this.bpmOptions,
-      this.playing,
       this.dingAt,
-      this.playVoice
+      this.playVoice,
+      this.tickAt16th
     ]
   }
 
   @Watch('allConfigs') allConfigsChanged (val: Ticker['allConfigs']) {
     console.log('allConfigs start')
-    if (this.playing && this._player) this.onStart(true)
+    if (this.isPlaying && this._player) this.onStart()
   }
 
-  @Watch('note') noteChanged (val: Ticker['note']) {
-    console.log('note start')
-    if (this.playing) this.onStart(false)
+  @Watch('isPlaying') isPlayingChanged (val: Ticker['isPlaying']) {
+    this.$emit('update:isPlaying', val)
   }
 
   public get beatDots () {
@@ -64,11 +69,36 @@ export default class Ticker extends Vue {
   }
 
   private _player: SimplePlayer | undefined
-  private async onStart (withPrepare: boolean = true) {
+  private async onStart () {
+    MidiPlay.activate()
     this.onStop()
     console.log('onStart')
     await this.$nextTick()
     if (!this.note) return
+    this.isPlaying = true
+    this.scheduleNotes(this.note, 0)
+  }
+
+  private onStop () {
+    console.log('onStop')
+    if (this._player) {
+      this._player.stop()
+      this._player = undefined
+    }
+    this.isPlaying = false
+  }
+
+  public playStop () {
+    const wasPlaying = this._player ? true : false
+    if (wasPlaying) this.onStop()
+    else this.onStart()
+  }
+
+  public onActivate () {
+    MidiPlay.activate()
+  }
+
+  private scheduleNotes (note: string, targetStartTime?: number, autoContinue: boolean = false) {
     // Create VexFlow Renderer from canvas element with id #boo.
     const ele = this.$refs['boo'] as HTMLElement
     if (!ele) return
@@ -81,54 +111,38 @@ export default class Ticker extends Vue {
     const vextab = new VexTab(artist);
     this.beatCount = -1
     try {
-        vextab.parse(`tabstave notation=true tablature=false\n notes ${this.note}\n`)
+        vextab.parse(note)
         artist.draw(renderer)
         const voices: Vex.Flow.Voice[][] = artist.getPlayerData().voices
+        // console.log('Play: ' + note)
         this._player = MidiPlay.playVexVoice({
           voices: voices,
           bpm: this.bpm,
           repeat: this.barRepeat,
           dingAt: this.dingAt,
           playVoice: this.playVoice,
+          delaySec: targetStartTime ? ((targetStartTime - new Date().getTime()) / 1000): 0,
           tickDuration: this.tickAt16th ? '16' : 'q',
-          prepareBeats: this.tickAt16th ? 1 : 4, // withPrepare ? 1 : 0,
+          prepareBeats: (autoContinue && this.continuePlayWoPrepare) ? 0 : (this.tickAt16th ? 1 : 4), // withPrepare ? 1 : 0,
           beatCallback: beatCount => {
             this.beatCount = beatCount
           }
         })
+
         this._player.start().then(() => {
-          this.onStop()
+          if (!this.nextNote) {
+            this.onStop()
+          }
           this.$emit('finishedPlay')
+        })
+        this._player.aboutToStop().then((timeToStop) => {
+          console.log('about to stop')
+          if (this.nextNote) {
+            this.scheduleNotes(this.nextNote, timeToStop, true)
+          }
         })
     } catch (e) {
         console.log(e);
     }
-    this.playing = true
-  }
-
-  private onStop () {
-    console.log('onStop')
-    if (this._player) {
-      this._player.stop()
-      this._player = undefined
-    }
-  }
-  public newPage () {
-    if (this.bpm <= 210) return
-    if (this._player) {
-      this.onStop()
-      setTimeout(() => {
-        this.onStart()
-      }, 200)
-    }
-  }
-  public onClick () {
-    const wasPlaying = this._player ? true : false
-    if (wasPlaying) this.onStop()
-    else this.onStart(true)
-  }
-
-  public onActivate () {
-    MidiPlay.activate()
   }
 }

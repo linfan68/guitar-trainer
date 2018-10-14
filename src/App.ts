@@ -3,7 +3,7 @@ import StaveLine from './components/StaveLine.vue'
 import Ticker from './components/Ticker.vue'
 import RhythmBank from './components/RhythmBank.vue'
 import MidiPlayer from './components/MidiPlayer.vue'
-
+import { ITcker } from './components/Ticker'
 
 const BLOCK_SIZE = 5
 @Component({
@@ -13,6 +13,7 @@ export default class App extends Vue {
   public currentIdx = 0
   public startFrom: number = 0
   public notes: string[] = []
+  public isTickerPlaying: boolean = false
 
   public get paging () {
     return this.notes.length > 10
@@ -27,7 +28,6 @@ export default class App extends Vue {
     if (this.getBlockStart() !== this.startFrom) {
       this.currentIdx = this.startFrom
     }
-    (this.$refs['ticker'] as any).newPage()
   }
   @Watch('currentIdx') currentIdxChanged(val: number) {
     if (this.getBlockStart() !== this.startFrom) {
@@ -59,23 +59,27 @@ export default class App extends Vue {
     const current = this.notesWithIdx[this.currentIdx]
     return current ? current.noteStr : ''
   }
-  
+
+  public get nextNote () {
+    const current = this.notesWithIdx[this.currentIdx + 1]
+    return current ? current.noteStr : ''
+  }
+
   public onNewLine() {
     this.currentIdx = (this.currentIdx + 1) % this.notes.length
   }
 
   public onSelect (idx: number) {
     if (idx < 0) return
-    if (this.currentIdx === idx) {
-      (this.$refs['ticker'] as any).onClick(true)
-    } else {
-      if (this.previewNote && idx === this.previewNote.idx) {
-        this.currentIdx = this.previewNote.idx
-      } else {
-        (this.$refs['ticker'] as any).onClick(false)
-      }
-    }
     this.currentIdx = idx;
+  }
+
+  public playStop () {
+    this.getTicker().playStop()
+  }
+
+  private getTicker () {
+    return (this.$refs['ticker'] as any as ITcker)
   }
       
   created() {

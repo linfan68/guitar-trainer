@@ -62,6 +62,7 @@ export module MidiPlay {
     voices: Vex.Flow.Voice[][]
     repeat: number
     bpm: number
+    delaySec: number
     notePerBeat: number
     prepareBeats: number
     playVoice: boolean
@@ -77,6 +78,7 @@ export module MidiPlay {
     playVoice: false,
     repeat: 1,
     bpm: 30,
+    delaySec: 0.0,
     tickDuration: '16',
     prepareBeats: 1,
     notePerBeat: 1/4,
@@ -137,9 +139,9 @@ export module MidiPlay {
       return duration
     }
 
-    let currentTime = 0
+    let currentTime = config.delaySec
     if (config.prepareBeats) {
-      currentTime += addTicks(0, config.prepareBeats * beatDuration, true)
+      currentTime += addTicks(currentTime, config.prepareBeats * beatDuration, true)
     }
     const addVoices = (startTime: number) => {
       let time = 0
@@ -147,15 +149,16 @@ export module MidiPlay {
         config.voices.forEach(vv => {
           vv.forEach(v => {
             v.getTickables().forEach(t => {
-              const n = (t as Vex.Flow.StaveNote)
-              const keys = n.getKeyProps().map(kp => kp.int_value)
+              const n = (t as (Vex.Flow.TabNote | Vex.Flow.StaveNote | Vex.Flow.BarNote))
+              const keys = (n.getPlayNote() || []).map((pn: string) => Tonal.Note.midi(pn.replace('/', '')))
               let d = durationMap[n.getDuration()]
+              if (!d) return
               const tup = n.getTuplet()
               if (tup) {
                 d = d * (tup as any).getNotesOccupied() / tup.getNotes().length
               }
               if (n.getDots()) d *= 1.5
-              if (n.getNoteType() !== 'r' && config.playVoice) {
+              if (keys.length > 0 && n.getNoteType() !== 'r' && config.playVoice) {
                 player.addEvent(startTime + time, () => {
                   MIDI.chordOn(0, keys, 63, 0)
                   MIDI.chordOff(0, keys, d)

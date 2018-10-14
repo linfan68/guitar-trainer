@@ -7,7 +7,11 @@
             v-for="item in startFromOptions"
             :key="item" :label="item" :value="item"/>
         </el-select> -->
-        <ticker ref="ticker" @finishedPlay="onNewLine" :note="currentNote"/>
+        <ticker ref="ticker" 
+          @finishedPlay="onNewLine"
+          :note="currentNote"
+          :nextNote="nextNote"
+          :isPlaying.sync="isTickerPlaying"/>
       </div>
       <div class='options'>
         <rhythm-bank :notes.sync="notes" />
@@ -30,7 +34,8 @@
         :class="{'stave-line-container-selected': note.idx === currentIdx}"
         @click="onSelect(note.idx)"
         >
-        <div class="note-idx" >{{note.idx + 1}}</div> 
+        <el-button v-if="note.idx === currentIdx" class="note-btn" @click="playStop">{{isTickerPlaying ? 'stop':'play'}}<br>{{note.idx + 1}}</el-button>
+        <div v-else class="note-idx" >{{note.idx + 1}}</div> 
         <stave-line :notes="note.noteStr" />
       </div>
       <div
@@ -90,8 +95,12 @@ body {
         line-height: 100%;
         font-size: 40px;
         width: 50px;
-        height: 40px;
+        height: 60px;
         align-self: center;
+      }
+      .note-btn {
+        width: 50px;
+        padding: 0px;
       }
     }
     .stave-line-container-selected {

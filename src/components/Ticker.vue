@@ -26,9 +26,10 @@
       </el-radio-group>
       <el-checkbox class="option-block" v-model="tickAt16th" label="1/16" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="playVoice" label="跟奏" border></el-checkbox>  
+      <el-checkbox class="option-block" v-model="continuePlayWoPrepare" label="连续" border></el-checkbox>
       <div ref='boo'>
       </div>
-      <el-button type="danger" class="start-btn" @click="onActivate">开始</el-button>
+      
       <!-- <div>
         <el-checkbox v-model="alternateBars" label="AltBar" border></el-checkbox>
       </div> -->
@@ -39,6 +40,14 @@
 <script lang="ts" src="./Ticker.ts">
 
 </script>
+
+<style lang="scss">
+.el-radio-button__inner {
+  padding: 10px;
+  height: 40px;
+}
+
+</style>
 
 <style lang="scss" scoped>
 .ticker-loading {

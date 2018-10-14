@@ -1,6 +1,6 @@
 <template>
   <div class="rhythm-bank">
-    <el-select class="option-block" v-model="type" :style="{ width: '130px' }">
+    <el-select class="option-block" v-model="type" :style="{ width: '110px' }">
       <el-option v-for="item in types" :key="item" :label="item" :value="item" />
     </el-select>
     <div v-if="isRhythm">

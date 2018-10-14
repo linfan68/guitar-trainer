@@ -18,6 +18,8 @@ export class SimplePlayer {
   private _timer?: number
   private _stateTime?: number
   public start () {
+    // console.log('SimplePlay: \n' + this._schedule.map(s => s.delay.toFixed(3)).join(','))
+    this._aboutToStopCb = undefined
     this._schedule.sort((a, b) => a.delay - b.delay)
     this._stateTime = new Date().getTime()
     while (this._schedule[0].delay < 0) {
@@ -31,6 +33,12 @@ export class SimplePlayer {
 
     return res
   }
+  private _aboutToStopCb?: (timeToStop: number) => void = undefined
+  public aboutToStop(): Promise<number> {
+    return new Promise<number>(res => {
+      this._aboutToStopCb = res
+    })
+  }
 
   public stop () {
     this._stopCb = undefined
@@ -43,9 +51,11 @@ export class SimplePlayer {
     const head = this._schedule.shift()
     this._timer = window.setTimeout(() => {
       const duration = head!.event()
+      // console.log(`tick: ${head!.delay}`)
       if (this._schedule.length === 0) {
         if (this._stopCb) {
           window.setTimeout(this._stopCb!, duration * 1000)
+          if (this._aboutToStopCb) this._aboutToStopCb(duration * 1000 + (new Date().getTime()))
         }
       }
       this.tick()

@@ -14,8 +14,8 @@ const vexTabHeaders = {
 
 @Component
 export default class RhythmBank extends Vue {
-  public type: BankType = BankType.Scale
-  public get types () { return Object.values(BankType) }
+  public type: BankType = BankType.Rhythm
+  public get types () { return [BankType.Rhythm] }
 
   public get notes () {
     switch (this.type) {

@@ -1,1 +1,1 @@
-tsc -w -m commonjs -t ES6 deploy.ts
+tsc --inlineSourceMap -w -m commonjs -t ES6 homework.ts

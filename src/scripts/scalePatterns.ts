@@ -87,10 +87,11 @@ export function getScalePractice1 (scaleName: string, startString: string, rever
       fred = FredBoard.findFred(notes[idx], stringNo, lastFred)
     }
     lastFred = fred
+    const step = reverse ? (21 - idx) % 7 : idx%7
     return {
       fred,
       stringNo,
-      msg: `${notes[idx]}-` +  (idx%7 + 1)// String.fromCharCode(0x2170 + idx%7)
+      msg: `${notes[idx]}-` + (step + 1)// String.fromCharCode(0x2170 + idx%7)
     }
     // return `${stringNo}:${notes[idx]}`
   })
