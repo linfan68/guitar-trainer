@@ -4,6 +4,7 @@ import Ticker from './components/Ticker.vue'
 import RhythmBank from './components/RhythmBank.vue'
 import MidiPlayer from './components/MidiPlayer.vue'
 import { ITcker } from './components/Ticker'
+import { BarNotes } from '@/scripts/rhythmPatterns'
 
 const BLOCK_SIZE = 5
 @Component({
@@ -12,15 +13,15 @@ const BLOCK_SIZE = 5
 export default class App extends Vue {
   public currentIdx = 0
   public startFrom: number = 0
-  public notes: string[] = []
+  public lines: BarNotes[] = []
   public isTickerPlaying: boolean = false
 
   public get paging () {
-    return this.notes.length > 10
+    return this.lines.length > 20
   }
 
   public get startFromOptions() {
-     return Array(Math.ceil(this.notes.length / BLOCK_SIZE))
+     return Array(Math.ceil(this.lines.length / BLOCK_SIZE))
     .fill(0).map((v, idx) => idx * BLOCK_SIZE)
   }
 
@@ -42,7 +43,7 @@ export default class App extends Vue {
     return Math.floor(this.currentIdx / BLOCK_SIZE) * BLOCK_SIZE
   }
 
-  private get notesWithIdx () { return this.notes.map((n, idx) => ({ noteStr: n, idx })) }
+  private get notesWithIdx () { return this.lines.map((n, idx) => ({ line: n, idx, key: JSON.stringify(n) + idx })) }
   public get noteBlock () {
     if (this.paging)
       return this.notesWithIdx.slice(this.startFrom, this.startFrom + BLOCK_SIZE)
@@ -57,16 +58,16 @@ export default class App extends Vue {
   }
   public get currentNote () {
     const current = this.notesWithIdx[this.currentIdx]
-    return current ? current.noteStr : ''
+    return current ? current.line : null
   }
 
   public get nextNote () {
     const current = this.notesWithIdx[this.currentIdx + 1]
-    return current ? current.noteStr : ''
+    return current ? current.line : null
   }
 
   public onNewLine() {
-    this.currentIdx = (this.currentIdx + 1) % this.notes.length
+    this.currentIdx = (this.currentIdx + 1) % this.lines.length
   }
 
   public onSelect (idx: number) {

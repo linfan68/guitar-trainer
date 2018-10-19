@@ -1,0 +1,38 @@
+           C, Ionian,  C,  D,  E,  F,  G,  A,  B
+
+           G, Ionian,  G,  A,  B,  C,  D,  E, F#
+          Gb, Ionian, Gb, Ab, Bb, Cb, Db, Eb,  F
+
+           D, Ionian,  D,  E, F#,  G,  A,  B, C#
+          Db, Ionian, Db, Eb,  F, Gb, Ab, Bb,  C
+
+           A, Ionian,  A,  B, C#,  D,  E, F#, G#
+          Ab, Ionian, Ab, Bb,  C, Db, Eb,  F,  G
+
+           E, Ionian,  E, F#, G#,  A,  B, C#, D#
+          Eb, Ionian, Eb,  F,  G, Ab, Bb,  C,  D
+
+           B, Ionian,  B, C#, D#,  E, F#, G#, A#
+          Bb, Ionian, Bb,  C,  D, Eb,  F,  G,  A
+
+           F, Ionian,  F,  G,  A, Bb,  C,  D,  E
+
+
+          C, Aeolian,  C,  D, Eb,  F,  G, Ab, Bb
+         C#, Aeolian, C#, D#,  E, F#, G#,  A,  B
+
+          G, Aeolian,  G,  A, Bb,  C,  D, Eb,  F
+         G#, Aeolian, G#, A#,  B, C#, D#,  E, F#
+
+          D, Aeolian,  D,  E,  F,  G,  A, Bb,  C
+         D#, Aeolian, D#, E#, F#, G#, A#,  B, C#
+
+          A, Aeolian,  A,  B,  C,  D,  E,  F,  G
+         A#, Aeolian, A#, B#, C#, D#, E#, F#, G#
+
+          F, Aeolian,  F,  G, Ab, Bb,  C, Db, Eb
+         F#, Aeolian, F#, G#,  A,  B, C#,  D,  E
+
+          E, Aeolian,  E, F#,  G,  A,  B,  C,  D
+          B, Aeolian,  B, C#,  D,  E, F#,  G,  A
+

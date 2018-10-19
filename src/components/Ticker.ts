@@ -3,6 +3,7 @@ require('../thirdparty/vextab-div')
 import * as Vex from 'vexflow'
 import { MidiPlay } from '../thirdparty/MidiPlay'
 import { SimplePlayer } from '../thirdparty/SimplePlayer'
+import { ScriptNotes } from '@/scripts/rhythmPatterns';
 
 declare const VexTab: any
 declare const Artist: any
@@ -18,8 +19,8 @@ export default class Ticker extends Vue implements ITcker {
   @Prop({ default: 1/4 }) public beatLength: number
   @Prop({ default: 4 }) public beatsPerBar: number
   @Prop({ default: 1 }) public prepareBeats: number
-  @Prop({ default: null }) public note: string | null
-  @Prop({ default: null }) public nextNote: string | null
+  @Prop({ default: null }) public script: ScriptNotes | null
+  @Prop({ default: null }) public nextScript: ScriptNotes | null
   
   public isLoading: boolean = true
   public barRepeat: number = 4
@@ -74,9 +75,9 @@ export default class Ticker extends Vue implements ITcker {
     this.onStop()
     console.log('onStart')
     await this.$nextTick()
-    if (!this.note) return
+    if (!this.script) return
     this.isPlaying = true
-    this.scheduleNotes(this.note, 0)
+    this.scheduleNotes(this.script, 0)
   }
 
   private onStop () {
@@ -98,47 +99,36 @@ export default class Ticker extends Vue implements ITcker {
     MidiPlay.activate()
   }
 
-  private scheduleNotes (note: string, targetStartTime?: number, autoContinue: boolean = false) {
+  private scheduleNotes (script: ScriptNotes, targetStartTime?: number, autoContinue: boolean = false) {
     // Create VexFlow Renderer from canvas element with id #boo.
-    const ele = this.$refs['boo'] as HTMLElement
-    if (!ele) return
-    while (ele.hasChildNodes()) {
-        ele.removeChild(ele.childNodes[0]);
-    }
-    const renderer = new Renderer(ele, Renderer.Backends.SVG);
-
-    const artist = new Artist(10, 10, 70, {scale: 0.01});
-    const vextab = new VexTab(artist);
     this.beatCount = -1
     try {
-        vextab.parse(note)
-        artist.draw(renderer)
-        const voices: Vex.Flow.Voice[][] = artist.getPlayerData().voices
         // console.log('Play: ' + note)
-        this._player = MidiPlay.playVexVoice({
-          voices: voices,
-          bpm: this.bpm,
-          repeat: this.barRepeat,
-          dingAt: this.dingAt,
-          playVoice: this.playVoice,
-          delaySec: targetStartTime ? ((targetStartTime - new Date().getTime()) / 1000): 0,
-          tickDuration: this.tickAt16th ? '16' : 'q',
-          prepareBeats: (autoContinue && this.continuePlayWoPrepare) ? 0 : (this.tickAt16th ? 1 : 4), // withPrepare ? 1 : 0,
-          beatCallback: beatCount => {
-            this.beatCount = beatCount
+        this._player = MidiPlay.playScriptNotes(
+          script,
+          {
+            bpm: this.bpm,
+            repeat: this.barRepeat,
+            dingAt: this.dingAt,
+            playVoice: this.playVoice,
+            delaySec: targetStartTime ? ((targetStartTime - new Date().getTime()) / 1000): 0,
+            tickDuration: this.tickAt16th ? ':16' : ':q',
+            prepareBeats: (autoContinue && this.continuePlayWoPrepare) ? 0 : (this.tickAt16th ? 1 : 4), // withPrepare ? 1 : 0,
+            beatCallback: beatCount => {
+              this.beatCount = beatCount
           }
         })
 
         this._player.start().then(() => {
-          if (!this.nextNote) {
+          if (!this.nextScript) {
             this.onStop()
           }
           this.$emit('finishedPlay')
         })
         this._player.aboutToStop().then((timeToStop) => {
           console.log('about to stop')
-          if (this.nextNote) {
-            this.scheduleNotes(this.nextNote, timeToStop, true)
+          if (this.nextScript) {
+            this.scheduleNotes(this.nextScript, timeToStop, true)
           }
         })
     } catch (e) {

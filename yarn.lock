@@ -6715,6 +6715,15 @@ tonal-pcset@^2.0.0:
     tonal-interval "^2.0.0"
     tonal-note "^2.0.0"
 
+tonal-range@2.0.0:
+  version "2.0.0"
+  resolved "http://registry.npm.taobao.org/tonal-range/download/tonal-range-2.0.0.tgz#57238573fd7303019e660a668228dd4c0daf83d8"
+  dependencies:
+    tonal-array "^2.0.0"
+    tonal-distance "^2.0.0"
+    tonal-note "^2.0.0"
+    tonal-pcset "^2.0.0"
+
 tonal-scale@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/tonal-scale/download/tonal-scale-2.0.0.tgz#a3e2c948b4b53b5a7a09e1eb722bbb02bec565c5"

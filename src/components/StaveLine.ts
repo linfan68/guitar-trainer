@@ -1,4 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { ScriptNotes, script2VexTabText } from '@/scripts/rhythmPatterns';
 require('../thirdparty/vextab-div')
 
 declare const VexTab: any
@@ -10,11 +11,11 @@ const Renderer = Vex.Flow.Renderer;
 
 @Component
 export default class StaveLine extends Vue {
-  @Prop({ default: null }) public notes: string | null
+  @Prop({ default: null }) public script: ScriptNotes | null
 
   public isMounted: boolean = false
   public get readyNote () {
-    return this.isMounted ? this.notes : undefined
+    return this.isMounted ? this.script : undefined
   }
 
   @Watch('readyNote', { immediate: true }) readyNoteChanged(val: StaveLine['readyNote']) {
@@ -30,8 +31,10 @@ export default class StaveLine extends Vue {
     const vextab = new VexTab(artist);
 
     try {
-        vextab.parse(`${val}\n`)
-        artist.draw(renderer)
+      const vexStr = script2VexTabText(val)
+      // console.log(vexStr)
+      vextab.parse(`${vexStr}\n`)
+      artist.draw(renderer)
     } catch (e) {
         console.log(e);
     }

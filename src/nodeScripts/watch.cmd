@@ -1,1 +1,1 @@
-tsc --inlineSourceMap -w -m commonjs -t ES6 homework.ts
+tsc --inlineSourceMap -w -m commonjs -t ES6  --lib DOM,ES6,DOM.Iterable,ScriptHost,ES2017 homework.ts

@@ -9,12 +9,12 @@
         </el-select> -->
         <ticker ref="ticker" 
           @finishedPlay="onNewLine"
-          :note="currentNote"
-          :nextNote="nextNote"
+          :script="currentNote"
+          :nextScript="nextNote"
           :isPlaying.sync="isTickerPlaying"/>
       </div>
       <div class='options'>
-        <rhythm-bank :notes.sync="notes" />
+        <rhythm-bank :lines.sync="lines" />
       </div>
       <!-- <midi-player></midi-player> -->
     </div>
@@ -28,7 +28,7 @@
         上一页
       </div>
       <div
-        v-for="note in noteBlock" :key="note.noteStr + note.idx"
+        v-for="note in noteBlock" :key="note.key"
         :id="'stave-line-' + note.idx"
         class="stave-line-container"
         :class="{'stave-line-container-selected': note.idx === currentIdx}"
@@ -36,7 +36,7 @@
         >
         <el-button v-if="note.idx === currentIdx" class="note-btn" @click="playStop">{{isTickerPlaying ? 'stop':'play'}}<br>{{note.idx + 1}}</el-button>
         <div v-else class="note-idx" >{{note.idx + 1}}</div> 
-        <stave-line :notes="note.noteStr" />
+        <stave-line :script="note.line" />
       </div>
       <div
         v-if="previewNote"
@@ -45,7 +45,7 @@
         @click="onSelect(previewNote.idx)"
         >
         <div class="note-idx" >{{previewNote.idx + 1}}</div> 
-        <stave-line :notes="previewNote.noteStr" />
+        <stave-line :script="previewNote.line" />
       </div>
     </div>
     

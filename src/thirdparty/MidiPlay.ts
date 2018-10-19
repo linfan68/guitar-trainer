@@ -10,9 +10,8 @@ require('../thirdparty/vextab-div')
 var Tonal = require("tonal");
 var MidiWriter = require('midi-writer-js')
 
-import * as Vex from 'vexflow'
-import { start } from 'repl';
-import { SimplePlayer } from '@/thirdparty/SimplePlayer';
+import { SimplePlayer } from '@/thirdparty/SimplePlayer'
+import { ScriptNotes } from '@/scripts/rhythmPatterns'
 
 declare const MIDI: any
 
@@ -59,7 +58,6 @@ export module MidiPlay {
   }
 
   export interface PlayConfig {
-    voices: Vex.Flow.Voice[][]
     repeat: number
     bpm: number
     delaySec: number
@@ -74,12 +72,11 @@ export module MidiPlay {
     beatCallback: ((i: number) => void) | undefined
   }
   const defaultConfig: PlayConfig = {
-    voices: [],
     playVoice: false,
     repeat: 1,
     bpm: 30,
     delaySec: 0.0,
-    tickDuration: '16',
+    tickDuration: ':16',
     prepareBeats: 1,
     notePerBeat: 1/4,
     dingNote: 100,
@@ -90,7 +87,7 @@ export module MidiPlay {
   }
 
 
-  export function playVexVoice (inputConfig: Partial<PlayConfig>) {
+  export function playScriptNotes (script: ScriptNotes, inputConfig: Partial<PlayConfig>) {
     activate()
     const config = {
       ...defaultConfig,
@@ -102,10 +99,12 @@ export module MidiPlay {
     const beatDuration = 60 / config.bpm
     const noteDuration = beatDuration / config.notePerBeat!
     const durationMap: {[key:string]: number} = {
-      'h': 1/2 * noteDuration,
-      'q': 1/4 * noteDuration,
-      '8': 1/8 * noteDuration,
-      '16': 1/16 * noteDuration
+      ':h': 1/2 * noteDuration,
+      ':q': 1/4 * noteDuration,
+      ':qd': 1/4 * noteDuration * 1.5,
+      ':8': 1/8 * noteDuration,
+      ':8d': 1/8 * noteDuration * 1.5,
+      ':16': 1/16 * noteDuration
     }
     
     player.addEvent(-1, () => {
@@ -146,19 +145,17 @@ export module MidiPlay {
     const addVoices = (startTime: number) => {
       let time = 0
       Array(config.repeat).fill(0).forEach(v => {
-        config.voices.forEach(vv => {
-          vv.forEach(v => {
-            v.getTickables().forEach(t => {
-              const n = (t as (Vex.Flow.TabNote | Vex.Flow.StaveNote | Vex.Flow.BarNote))
-              const keys = (n.getPlayNote() || []).map((pn: string) => Tonal.Note.midi(pn.replace('/', '')))
-              let d = durationMap[n.getDuration()]
-              if (!d) return
-              const tup = n.getTuplet()
-              if (tup) {
-                d = d * (tup as any).getNotesOccupied() / tup.getNotes().length
+        script.bars.forEach(bar => {
+          bar.beats.forEach(beat => {
+            beat.notes.forEach(n => {
+              let d = durationMap[n.duration]
+              if (beat.tuplets) {
+                if (beat.tuplets === '^3^') d = d * 3 / 4
+                if (beat.tuplets === '^5^') d = d * 5 / 8
               }
-              if (n.getDots()) d *= 1.5
-              if (keys.length > 0 && n.getNoteType() !== 'r' && config.playVoice) {
+
+              if (!n.isRest && config.playVoice) {
+                const keys = (n.symbol.split('.') || []).map((pn: string) => Tonal.Note.midi(pn.replace('/', '')))
                 player.addEvent(startTime + time, () => {
                   MIDI.chordOn(0, keys, 63, 0)
                   MIDI.chordOff(0, keys, d)

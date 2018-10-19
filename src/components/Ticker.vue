@@ -27,7 +27,6 @@
       <el-checkbox class="option-block" v-model="tickAt16th" label="1/16" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="playVoice" label="跟奏" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="continuePlayWoPrepare" label="连续" border></el-checkbox>
-      <div ref='boo'>
       </div>
       
       <!-- <div>

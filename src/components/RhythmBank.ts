@@ -1,5 +1,5 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { generate4thNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar, generate16thNotes } from '@/scripts/rhythmPatterns'
+import { generate4thNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar, generate16thNotes, BarNotes, ScriptNotes } from '@/scripts/rhythmPatterns'
 import { getScalePractice1 } from '@/scripts/scalePatterns'
 
 enum BankType {
@@ -17,15 +17,14 @@ export default class RhythmBank extends Vue {
   public type: BankType = BankType.Rhythm
   public get types () { return [BankType.Rhythm] }
 
-  public get notes () {
+  public get lines (): ScriptNotes[] {
     switch (this.type) {
-      case BankType.Rhythm: return this.rhythemNotes.map(n => vexTabHeaders[BankType.Rhythm] + n)
-      case BankType.Scale: return this.scaleNotes.map(n => vexTabHeaders[BankType.Scale] + n)
+      case BankType.Rhythm: return this.rhythmBars.map((b): ScriptNotes => ({bars: [b], header: 'tabstave notation=true tablature=false\n notes '}))
     }
     return []
   }
-  @Watch('notes', {immediate: true}) public notesChanged(val: RhythmBank['notes']) {
-    this.$emit('update:notes', val)
+  @Watch('lines', {immediate: true}) public linesChanged(val: RhythmBank['lines']) {
+    this.$emit('update:lines', val)
   }
 
   //#region Rhythm
@@ -41,7 +40,7 @@ export default class RhythmBank extends Vue {
     l: (i === Math.round(i)) ? `${i}个三连音` : `${Math.round(i * 100)}%三连音`
   }))
 
-  public get rhythemNotes () {
+  public get rhythmBars () {
     const options: IGenerationOptions = {
       withRest: this.rhythmAddRest,
       shuffle: true
@@ -53,7 +52,7 @@ export default class RhythmBank extends Vue {
     })
 
     if (this.rhythmIsRepeatOrRandom) {
-      return [...fourth, ...triplets].map(p => [p, p, p, p].join(' '))
+      return [...fourth, ...triplets].map((p): BarNotes => ({beats: [p, p, p, p]}))
     }
     else {
       return mixPatternsToBar(100, fourth, triplets, this.rhythmTupletCount)
