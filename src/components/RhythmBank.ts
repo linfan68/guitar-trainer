@@ -1,5 +1,5 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { generate4thNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar, generate16thNotes, BarNotes, ScriptNotes } from '@/scripts/rhythmPatterns'
+import { generate4thNotes, generateTripleNotes, IGenerationOptions, mixPatternsToBar, generate16thNotes, BarNotes, ScriptNotes, insertTiesToBar } from '@/scripts/rhythmPatterns'
 import { getScalePractice1 } from '@/scripts/scalePatterns'
 
 enum BankType {
@@ -34,6 +34,7 @@ export default class RhythmBank extends Vue {
   public rhythmAddRest: boolean = true
   public rhythm16thOnly: boolean = false
   public rhythmAddTupletRest: boolean = false
+  public rhythmAddTies: boolean = false
   public rhythmTupletCount: number = 0
   public rhythmTupletCountOptions = [0, 1, 2, 3, 0.2].map(i => ({
     v: i,
@@ -55,7 +56,11 @@ export default class RhythmBank extends Vue {
       return [...fourth, ...triplets].map((p): BarNotes => ({beats: [p, p, p, p]}))
     }
     else {
-      return mixPatternsToBar(100, fourth, triplets, this.rhythmTupletCount)
+      let bars = mixPatternsToBar(100, fourth, triplets, this.rhythmTupletCount)
+      if (this.rhythmAddTies) {
+        bars = insertTiesToBar(bars, 0.7)
+      }
+      return bars
     }
   
   }

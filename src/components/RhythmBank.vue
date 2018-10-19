@@ -1,8 +1,8 @@
 <template>
   <div class="rhythm-bank">
-    <el-select class="option-block" v-model="type" :style="{ width: '110px' }">
+    <!-- <el-select class="option-block" v-model="type" :style="{ width: '110px' }">
       <el-option v-for="item in types" :key="item" :label="item" :value="item" />
-    </el-select>
+    </el-select> -->
     <div v-if="isRhythm">
       <el-radio-group class="radio-block" v-model="rhythmIsRepeatOrRandom">
         <el-radio-button
@@ -15,6 +15,7 @@
       <el-checkbox class="option-block" v-model="rhythm16thOnly" label="仅16分" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="rhythmAddRest" label="休止" border></el-checkbox>  
       <el-checkbox class="option-block" v-model="rhythmAddTupletRest" label="休止3" border></el-checkbox>  
+      <el-checkbox class="option-block" v-model="rhythmAddTies" label="连线" border></el-checkbox>  
       <!-- <div>{{notes.length}}条</div> -->
     </div>
     <div v-if="isScale">

@@ -103,6 +103,7 @@ export module MidiPlay {
       ':q': 1/4 * noteDuration,
       ':qd': 1/4 * noteDuration * 1.5,
       ':8': 1/8 * noteDuration,
+      ':8t': 1/8 * noteDuration * (2 / 3),
       ':8d': 1/8 * noteDuration * 1.5,
       ':16': 1/16 * noteDuration
     }
@@ -148,10 +149,10 @@ export module MidiPlay {
         script.bars.forEach(bar => {
           bar.beats.forEach(beat => {
             beat.notes.forEach(n => {
+              if (n.isTied) return
               let d = durationMap[n.duration]
-              if (beat.tuplets) {
-                if (beat.tuplets === '^3^') d = d * 3 / 4
-                if (beat.tuplets === '^5^') d = d * 5 / 8
+              if (n.tiedDuration) {
+                d += durationMap[n.tiedDuration]
               }
 
               if (!n.isRest && config.playVoice) {
