@@ -6661,12 +6661,21 @@ tonal-array@^2.0.0:
   dependencies:
     tonal-note "^2.0.0"
 
-tonal-chord@^2.0.0:
+tonal-chord@2.0.0, tonal-chord@^2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/tonal-chord/download/tonal-chord-2.0.0.tgz#f5640f9b6782cfffd097475ab059989683449393"
   dependencies:
     tonal-dictionary "^2.0.0"
     tonal-distance "^2.0.0"
+    tonal-note "^2.0.0"
+    tonal-pcset "^2.0.0"
+
+tonal-detect@2.0.0:
+  version "2.0.0"
+  resolved "http://registry.npm.taobao.org/tonal-detect/download/tonal-detect-2.0.0.tgz#c48e52da58c38b6f97ee72d8a24ed8a8d4b5dd21"
+  dependencies:
+    tonal-array "^2.0.0"
+    tonal-dictionary "^2.0.0"
     tonal-note "^2.0.0"
     tonal-pcset "^2.0.0"
 

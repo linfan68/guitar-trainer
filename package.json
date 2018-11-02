@@ -17,6 +17,8 @@
     "midi-writer-js": "1.5.2",
     "tonal": "2.0.0",
     "tonal-range": "2.0.0",
+    "tonal-chord": "2.0.0",
+    "tonal-detect": "2.0.0",
     "node-fetch": "2.2.0"
   },
   "devDependencies": {

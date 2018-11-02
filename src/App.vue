@@ -34,8 +34,9 @@
         :class="{'stave-line-container-selected': note.idx === currentIdx}"
         @click="onSelect(note.idx)"
         >
-        <el-button v-if="note.idx === currentIdx" class="note-btn" @click="playStop">{{isTickerPlaying ? 'stop':'play'}}<br>{{note.idx + 1}}</el-button>
-        <div v-else class="note-idx" >{{note.idx + 1}}</div> 
+        <el-button v-if="note.idx === currentIdx && !isTickerPlaying" class="note-btn" icon="el-icon-caret-right" @click="playStop"></el-button>
+        <el-button v-if="note.idx === currentIdx && isTickerPlaying" class="note-btn" icon="el-icon-circle-close" @click="playStop"></el-button>
+        <div v-if="note.idx !== currentIdx" class="note-idx" >{{note.idx + 1}}</div> 
         <stave-line :script="note.line" />
       </div>
       <div
@@ -94,12 +95,13 @@ body {
         vertical-align: middle;
         line-height: 100%;
         font-size: 40px;
-        width: 50px;
+        width: 100px;
         height: 60px;
         align-self: center;
       }
       .note-btn {
-        width: 50px;
+        width: 100px;
+        font-size: 30px;
         padding: 0px;
       }
     }

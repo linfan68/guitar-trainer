@@ -14,6 +14,7 @@ export default class StaveLine extends Vue {
   @Prop({ default: null }) public script: ScriptNotes | null
 
   public isMounted: boolean = false
+  public vexStr: string = ''
   public get readyNote () {
     return this.isMounted ? this.script : undefined
   }
@@ -32,6 +33,7 @@ export default class StaveLine extends Vue {
 
     try {
       const vexStr = script2VexTabText(val)
+      this.vexStr = vexStr
       // console.log(vexStr)
       vextab.parse(`${vexStr}\n`)
       artist.draw(renderer)

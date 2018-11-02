@@ -77,6 +77,7 @@ function insertRests(beat: BeatNotes) {
   const patterns = pickPatterns(beat.notes.length, false, true)
   return patterns.map(pick => {
     return compose<BeatNotes>({
+      ...beat,
       notes: beat.notes.map((v, i): NoteSpec => {
         return pick[i]
         ? {...v, symbol: restSymbol, isRest: true}

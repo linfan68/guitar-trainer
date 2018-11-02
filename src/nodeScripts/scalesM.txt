@@ -36,3 +36,16 @@
           E, Aeolian,  E, F#,  G,  A,  B,  C,  D
           B, Aeolian,  B, C#,  D,  E, F#,  G,  A
 
+           C, Ionian,  C,  D,  E,  F,  G,  A,  B
+           C, Dorian,  C,  D, Eb,  F,  G,  A, Bb
+         C, Phrygian,  C, Db, Eb,  F,  G, Ab, Bb
+           C, Lydian,  C,  D,  E, F#,  G,  A,  B
+       C, Mixolydian,  C,  D,  E,  F,  G,  A, Bb
+          C, Aeolian,  C,  D, Eb,  F,  G, Ab, Bb
+          C, Locrian,  C, Db, Eb,  F, Gb, Ab, Bb
+    C, Melodic Minor,  C,  D, Eb,  F,  G,  A,  B
+      C, Minor Blues,  C, Eb,  F, Gb,  G, Bb
+      C, Major Blues,  C,  D, Eb,  E,  G,  A
+      
+          
+
